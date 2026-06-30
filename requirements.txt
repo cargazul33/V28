@@ -1,0 +1,7 @@
+playwright
+requests
+beautifulsoup4
+pypdf
+imap-tools
+python-docx
+openpyxl
