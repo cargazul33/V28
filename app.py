@@ -10,7 +10,7 @@ from modules.engine.orchestrator import resolver_items
 from modules.telegram_bot import enviar_telegram
 from modules.telegram_report import construir_alerta_licitacion, construir_resumen_corrida
 from modules.utils.logger import log_start, log_end, log_error
-from modules.storage.seen import id_oportunidad
+from modules.storage.seen import filtrar_nuevas
 from config import (
     APP_VERSION,
     TOP_LIMIT,
@@ -138,14 +138,18 @@ def main():
     try:
         p, browser, context, page = crear_sesion()
         oportunidades = scan_licitaciones(page)
+        total_detectadas = len(oportunidades)
+        # Dedup persistente (Supabase): solo seguimos con las NO vistas antes.
+        oportunidades = filtrar_nuevas(oportunidades)
         candidatas = seleccionar_para_detalle(oportunidades)
 
         if not candidatas:
             enviar_telegram(
                 f"✅ Radar M&M {APP_VERSION}\n\n"
                 f"Corrida OK\n"
-                f"Oportunidades detectadas: {len(oportunidades)}\n"
-                f"Sin oportunidades prioritarias para enviar."
+                f"Oportunidades detectadas: {total_detectadas}\n"
+                f"Nuevas (no vistas antes): {len(oportunidades)}\n"
+                f"Sin oportunidades nuevas para enviar."
             )
             return
 
@@ -166,7 +170,7 @@ def main():
         total_items = sum(len(p.get("items", [])) for p in procesadas)
         enviar_telegram(
             construir_resumen_corrida(
-                len(oportunidades),
+                total_detectadas,
                 enviadas,
                 oportunidades,
                 detalle_revisadas=len(procesadas),

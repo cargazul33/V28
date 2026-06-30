@@ -1,5 +1,22 @@
 # Changelog
 
+## V29 — Memoria persistente (Supabase) + dedup conectado
+
+- **Bug del día arreglado:** `app.py` ahora llama a `filtrar_nuevas` (en V28
+  estaba importado pero nunca se ejecutaba, por eso re-alertaba lo mismo cada día).
+- **`seen.py` reescrito contra Supabase** (REST/PostgREST) con fallback a archivo
+  local si Supabase no está configurado o falla la red. La corrida nunca se frena
+  por esto.
+- **`config.py`:** nuevas variables `SUPABASE_URL`, `SUPABASE_KEY`
+  (acepta alias `SUPABASE_SECRET_KEY`/`SUPABASE_SERVICE_ROLE_KEY`),
+  `SUPABASE_TABLE_SEEN`, y helper `is_supabase_configured()`.
+- **Workflow:** pasa `SUPABASE_URL` y `SUPABASE_KEY` como secrets.
+- **Nuevo:** `SETUP_SUPABASE.md` con el SQL de la tabla y los pasos.
+- Sin tablas de precios/renglones/dashboard todavía: eso es V30+, después de
+  probar el dedup en una corrida real.
+
+# Changelog
+
 ## V28 — Consolidación (una sola arquitectura, ejecutable)
 
 Esta versión no agrega features: arregla que el sistema **corra el código real**.

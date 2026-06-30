@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 APP_NAME = "Radar M&M"
-APP_VERSION = "V28"
+APP_VERSION = "V29"
 
 BASE_DIR = Path(__file__).resolve().parent
 DOWNLOADS_DIR = BASE_DIR / "downloads"
@@ -40,6 +40,16 @@ CODI_LOGIN_URL = os.getenv(
 
 BRAVE_API_KEY = os.getenv("BRAVE_API_KEY", "").strip()
 
+# Supabase: memoria persistente del radar (dedup de licitaciones vistas).
+# La clave va SOLO como secret en GitHub Actions, nunca en el repo.
+SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
+SUPABASE_KEY = (
+    os.getenv("SUPABASE_KEY")
+    or os.getenv("SUPABASE_SECRET_KEY")
+    or os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+).strip()
+SUPABASE_TABLE_SEEN = os.getenv("SUPABASE_TABLE_SEEN", "seen_licitaciones").strip()
+
 USD_TO_ARS = float(os.getenv("USD_TO_ARS", "1550"))
 PYG_TO_ARS = float(os.getenv("PYG_TO_ARS", "0.22"))
 
@@ -62,6 +72,10 @@ def is_telegram_configured():
 
 def is_gmail_configured():
     return bool(GMAIL_USER and GMAIL_APP_PASSWORD)
+
+
+def is_supabase_configured():
+    return bool(SUPABASE_URL and SUPABASE_KEY)
 
 
 def is_codi_configured():
